@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sudoku_total/square.dart';
+import 'package:sudoku_total/square_model.dart';
 import 'package:sudoku_total/sudoku_row.dart';
 import 'package:sudoku_total/square_collection.dart';
 
 class SelectionNotifier extends ChangeNotifier{
   void setSelectedSquare(int sqInd){
-    LogicalBoard.selectedSquare = LogicalBoard.squares.firstWhere((element) => element.squareIndex==sqInd);
+    LogicalBoard.selectedSquare = LogicalBoard.squareModels.firstWhere((element) => element.squareIndex==sqInd);
     notifyListeners();
   }
 }
@@ -21,13 +22,13 @@ class LogicalBoard {
   static final SelectionNotifier selectionNotifier = SelectionNotifier();
   static final NumberButtonNotifier numberButtonNotifier = NumberButtonNotifier();
 
-  static final List<Square> squares = _initSquares();
+  static final List<SquareModel> squareModels = _initSquares();
   static final List<SudokuRow> rowsWidgets = _initRowsWidgets();
   static final List<LogicalBox> boxes = _initBoxes();
   static final List<LogicalRow> rows = _initRows();
   static final List<LogicalCol> cols = _initCols();
 
-  static Square? selectedSquare;
+  static SquareModel? selectedSquare;
   static int numberLastClicked=0;
 
 
@@ -64,20 +65,20 @@ class LogicalBoard {
     return List.unmodifiable(rows);
   }
 
-  static List<Square> _getRowSquares(int rowIndex){
-    return List.unmodifiable(squares.where((element) => element.rowIndex == rowIndex));
+  static List<SquareModel> _getRowSquares(int rowIndex){
+    return List.unmodifiable(squareModels.where((element) => element.rowIndex == rowIndex));
   }
 
-  static List<Square> _getColSquares(int colIndex){
-    return List.unmodifiable(squares.where((element) => element.colIndex == colIndex));
+  static List<SquareModel> _getColSquares(int colIndex){
+    return List.unmodifiable(squareModels.where((element) => element.colIndex == colIndex));
   }
 
-  static List<Square> _getBoxSquares(int boxIndex){
-    return List.unmodifiable(squares.where((element) => element.boxIndex == boxIndex));
+  static List<SquareModel> _getBoxSquares(int boxIndex){
+    return List.unmodifiable(squareModels.where((element) => element.boxIndex == boxIndex));
   }
 
-  static List<Square> _initSquares() {
-    List<Square> initSquares = [];
+  static List<SquareModel> _initSquares() {
+    List<SquareModel> initSquares = [];
     //Initialise squares with squareIndex, rowIndex, colIndex and boxIndex
     int squareIndex = 0;
     int rowIndex = 0;
@@ -87,7 +88,7 @@ class LogicalBoard {
     int boxIndex = 0;
     for (var count = 1; count < 82; count++) {
       //Add row, col and box index to the new square
-      initSquares.add(Square(squareIndex, boxIndex, rowIndex, colIndex));
+      initSquares.add(SquareModel(squareIndex, rowIndex, colIndex, boxIndex));
       //Every square
       //col index increments
       colIndex++;

@@ -1,62 +1,55 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sudoku_total/logical_board.dart';
 
-class Square extends StatefulWidget {
-  final int squareIndex;
-  final int boxIndex;
-  final int rowIndex;
-  final int colIndex;
-  const Square(
-    this.squareIndex,
-    this.boxIndex,
-    this.rowIndex,
-    this.colIndex, {
+class Square extends StatelessWidget {
+  final int? _mainNumber;
+  final int? _answer;
+  final bool _showEdit1;
+  final bool _showEdit2;
+  final bool _showEdit3;
+  final bool _showEdit4;
+  final bool _showEdit5;
+  final bool _showEdit6;
+  final bool _showEdit7;
+  final bool _showEdit8;
+  final bool _showEdit9;
+  final bool _selected;
+  final bool _selectedCollection;
+  const Square({
     Key? key,
-  }) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _SquareState();
-}
-
-class _SquareState extends State<Square> {
-  int _mainNumber = 0;
-  bool showEdit1 = false;
-  bool showEdit2 = false;
-  bool showEdit3 = false;
-  bool showEdit4 = false;
-  bool showEdit5 = false;
-  bool showEdit6 = false;
-  bool showEdit7 = false;
-  bool showEdit8 = false;
-  bool showEdit9 = false;
-  bool _selected = false;
-  bool _selectedCollection = false;
+    required int? mainNumber,
+    required int? answer,
+    required bool showEdit1,
+    required bool showEdit2,
+    required bool showEdit3,
+    required bool showEdit4,
+    required bool showEdit5,
+    required bool showEdit6,
+    required bool showEdit7,
+    required bool showEdit8,
+    required bool showEdit9,
+    required bool selected,
+    required bool selectedCollection,
+  })  : _mainNumber = mainNumber,
+        _answer = answer,
+        _showEdit1 = showEdit1,
+        _showEdit2 = showEdit2,
+        _showEdit3 = showEdit3,
+        _showEdit4 = showEdit4,
+        _showEdit5 = showEdit5,
+        _showEdit6 = showEdit6,
+        _showEdit7 = showEdit7,
+        _showEdit8 = showEdit8,
+        _showEdit9 = showEdit9,
+        _selected = selected,
+        _selectedCollection = selectedCollection,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    LogicalBoard.numberButtonNotifier.addListener(() {
-      if(LogicalBoard.selectedSquare?.squareIndex == widget.squareIndex){
-        setState(() {
-          _mainNumber = LogicalBoard.numberLastClicked;
-        });
-      }
-    });
-    LogicalBoard.selectionNotifier.addListener(() {
-      setState(() {
-        _selected =
-            LogicalBoard.selectedSquare?.squareIndex == widget.squareIndex;
-        _selectedCollection =
-            LogicalBoard.selectedSquare?.squareIndex == widget.squareIndex ||
-                LogicalBoard.selectedSquare?.rowIndex == widget.rowIndex ||
-                LogicalBoard.selectedSquare?.colIndex == widget.colIndex ||
-                LogicalBoard.selectedSquare?.boxIndex == widget.boxIndex;
-      });
-    });
     return Material(
         child: InkWell(
-            onTap: () => LogicalBoard.selectionNotifier
-                .setSelectedSquare(widget.squareIndex),
+            onTap: () => print("Implement"), //TODO implement,
             child: Container(
               padding: const EdgeInsets.all(2.0),
               color: _selected
@@ -65,7 +58,7 @@ class _SquareState extends State<Square> {
               width: 52.0,
               height: 52.0,
               child: Container(
-                  padding: _mainNumber == 0
+                  padding: _mainNumber == null
                       ? const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 2.0)
                       : const EdgeInsets.all(0.0),
                   color: _selectedCollection
@@ -73,7 +66,7 @@ class _SquareState extends State<Square> {
                       : Theme.of(context).primaryColor,
                   width: 48.0,
                   height: 48.0,
-                  child: _mainNumber != 0
+                  child: _mainNumber != null
                       ? Center(
                           child: Text(
                           _mainNumber.toString(),
@@ -86,17 +79,17 @@ class _SquareState extends State<Square> {
                                   children: [
                                 Flexible(
                                     child: Text(
-                                  showEdit1 ? "1" : "",
+                                  _showEdit1 ? "1" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 )),
                                 Flexible(
                                     child: Text(
-                                  showEdit2 ? "2" : "",
+                                  _showEdit2 ? "2" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 )),
                                 Flexible(
                                     child: Text(
-                                  showEdit3 ? "3" : "",
+                                  _showEdit3 ? "3" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ))
                               ])),
@@ -106,17 +99,17 @@ class _SquareState extends State<Square> {
                                   children: [
                                 Flexible(
                                     child: Text(
-                                  showEdit4 ? "4" : "",
+                                  _showEdit4 ? "4" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 )),
                                 Flexible(
                                     child: Text(
-                                  showEdit5 ? "5" : "",
+                                  _showEdit5 ? "5" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 )),
                                 Flexible(
                                     child: Text(
-                                  showEdit6 ? "6" : "",
+                                  _showEdit6 ? "6" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ))
                               ])),
@@ -126,17 +119,17 @@ class _SquareState extends State<Square> {
                                   children: [
                                 Flexible(
                                     child: Text(
-                                  showEdit7 ? "7" : "",
+                                  _showEdit7 ? "7" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 )),
                                 Flexible(
                                     child: Text(
-                                  showEdit8 ? "8" : "",
+                                  _showEdit8 ? "8" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 )),
                                 Flexible(
                                     child: Text(
-                                  showEdit9 ? "9" : "",
+                                  _showEdit9 ? "9" : "",
                                   style: Theme.of(context).textTheme.bodyText2,
                                 ))
                               ]))

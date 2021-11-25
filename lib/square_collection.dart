@@ -1,23 +1,24 @@
 import 'package:flutter/cupertino.dart';
-import 'square.dart';
+import 'package:sudoku_total/square_model.dart';
+
 abstract class SquareCollection {
-  final List<Square> squareList;
+  final List<SquareModel> squareList;
   const SquareCollection(this.squareList, {
     Key? key,
   });
 }
 
 class LogicalRow extends SquareCollection {
-  LogicalRow(List<Square> squareList) : super(squareList);
+  LogicalRow(List<SquareModel> squareList) : super(squareList);
 
 }
 
 class LogicalCol extends SquareCollection {
-  LogicalCol(List<Square> squareList) : super(squareList);
+  LogicalCol(List<SquareModel> squareList) : super(squareList);
 
 }
 
 class LogicalBox extends SquareCollection {
-  LogicalBox(List<Square> squareList) : super(squareList);
+  LogicalBox(List<SquareModel> squareList) : super(squareList);
 
 }

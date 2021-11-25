@@ -31,9 +31,9 @@ class TotalSudokuApp extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Total Sudoku'),
           ),
-          body: Column(mainAxisSize: MainAxisSize.min,children: [
-            const SudokuBoard(),
-            NumberButtons(),
+          body: Column(mainAxisSize: MainAxisSize.min,children: [Expanded(child:
+            const SudokuBoard()),
+            Expanded(child:NumberButtons()),
           ])),
     );
   }
