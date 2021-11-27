@@ -1,42 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'logical_board.dart';
 
-class NumberButtons extends StatelessWidget {
-  const NumberButtons({
+class IconButtons extends StatelessWidget {
+  static const String penIcon = 'assets/pennib.svg';
+  const IconButtons({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisSize: MainAxisSize.min, children: const [
-      Expanded(child: NumberButton(1)),
-      Expanded(child: NumberButton(2)),
-      Expanded(child: NumberButton(3)),
-      Expanded(child: NumberButton(4)),
-      Expanded(child: NumberButton(5)),
-      Expanded(child: NumberButton(6)),
-      Expanded(child: NumberButton(7)),
-      Expanded(child: NumberButton(8)),
-      Expanded(child: NumberButton(9))
+      Expanded(child: IconButton(penIcon)),
     ]);
   }
 }
 
-class NumberButton extends StatefulWidget {
-  final int _number;
-  const NumberButton(
-    this._number, {
+class IconButton extends StatefulWidget {
+  final String _svg;
+  const IconButton(
+    this._svg, {
     Key? key,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => NumberButtonState();
+  State<StatefulWidget> createState() => IconButtonState();
 }
 
-class NumberButtonState extends State<NumberButton>
-    with TickerProviderStateMixin {
+class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 5),
@@ -86,7 +79,7 @@ class NumberButtonState extends State<NumberButton>
         child: GestureDetector(
       onTap: () {
         repeatAnimationOnce();
-        LogicalBoard.setNumber(widget._number);
+        // LogicalBoard.setNumber(widget._number);
       },
       child: SizedBox(
           width: 50,
@@ -98,8 +91,12 @@ class NumberButtonState extends State<NumberButton>
                 curve: Curves.decelerate,
                 reverseCurve: Curves.easeOut)),
             child: Center(
-                child: Text(widget._number.toString(),
-                    style: Theme.of(context).textTheme.headline4)),
+                child: SvgPicture.asset(
+                  widget._svg,
+                  color: Theme.of(context).primaryColorDark,
+                  height: 45,
+                  width: 45,
+                )),
           )),
     ));
   }

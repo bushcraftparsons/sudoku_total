@@ -1,27 +1,8 @@
-import 'package:flutter/cupertino.dart';
-import 'package:sudoku_total/square.dart';
 import 'package:sudoku_total/square_model.dart';
 import 'package:sudoku_total/sudoku_row.dart';
 import 'package:sudoku_total/square_collection.dart';
 
-class SelectionNotifier extends ChangeNotifier{
-  void setSelectedSquare(int sqInd){
-    LogicalBoard.selectedSquare = LogicalBoard.squareModels.firstWhere((element) => element.squareIndex==sqInd);
-    notifyListeners();
-  }
-}
-
-class NumberButtonNotifier extends ChangeNotifier{
-  void setNumber(int number){
-    LogicalBoard.numberLastClicked = number;
-    notifyListeners();
-  }
-}
-
 class LogicalBoard {
-  static final SelectionNotifier selectionNotifier = SelectionNotifier();
-  static final NumberButtonNotifier numberButtonNotifier = NumberButtonNotifier();
-
   static final List<SquareModel> squareModels = _initSquares();
   static final List<SudokuRow> rowsWidgets = _initRowsWidgets();
   static final List<LogicalBox> boxes = _initBoxes();
@@ -29,7 +10,21 @@ class LogicalBoard {
   static final List<LogicalCol> cols = _initCols();
 
   static SquareModel? selectedSquare;
-  static int numberLastClicked=0;
+
+  static void setNumber(int number){
+    if(selectedSquare != null){
+      selectedSquare?.mainNumber = number;
+    }
+
+  }
+
+  static void setSelectedSquare(int squareIndex){
+    selectedSquare = squareModels[squareIndex];
+    for (var sm in squareModels) {
+      sm.selected = (sm.squareIndex==squareIndex);
+      sm.selectedCollection = sm.boxIndex==selectedSquare?.boxIndex || sm.rowIndex==selectedSquare?.rowIndex || sm.colIndex==selectedSquare?.colIndex;
+    }
+  }
 
 
 

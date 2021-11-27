@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:sudoku_total/logical_board.dart';
+import 'package:sudoku_total/icon_buttons.dart';
 import 'package:sudoku_total/sudoku_board.dart';
 
 import 'number_buttons.dart';
@@ -31,12 +31,13 @@ class TotalSudokuApp extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Total Sudoku'),
           ),
-          body: Column(mainAxisSize: MainAxisSize.min,children: [Expanded(child:
-            const SudokuBoard()),
-            Expanded(child:NumberButtons()),
+          body: Column(mainAxisSize: MainAxisSize.min, children: const [
+            SudokuBoard(),
+            SizedBox(height: 10),
+            NumberButtons(),
+            SizedBox(height: 10),
+            IconButtons()
           ])),
     );
   }
 }
-
-

@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'logical_board.dart';
+
 class Square extends StatelessWidget {
+  final int _squareIndex;
   final int? _mainNumber;
   final int? _answer;
   final bool _showEdit1;
@@ -17,6 +20,7 @@ class Square extends StatelessWidget {
   final bool _selectedCollection;
   const Square({
     Key? key,
+    required int squareIndex,
     required int? mainNumber,
     required int? answer,
     required bool showEdit1,
@@ -30,7 +34,8 @@ class Square extends StatelessWidget {
     required bool showEdit9,
     required bool selected,
     required bool selectedCollection,
-  })  : _mainNumber = mainNumber,
+  })  : _squareIndex = squareIndex,
+        _mainNumber = mainNumber,
         _answer = answer,
         _showEdit1 = showEdit1,
         _showEdit2 = showEdit2,
@@ -49,7 +54,7 @@ class Square extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
         child: InkWell(
-            onTap: () => print("Implement"), //TODO implement,
+            onTap: () => LogicalBoard.setSelectedSquare(_squareIndex),
             child: Container(
               padding: const EdgeInsets.all(2.0),
               color: _selected
@@ -64,13 +69,13 @@ class Square extends StatelessWidget {
                   color: _selectedCollection
                       ? Theme.of(context).backgroundColor
                       : Theme.of(context).primaryColor,
-                  width: 48.0,
-                  height: 48.0,
+                  width: 46.0,
+                  height: 46.0,
                   child: _mainNumber != null
                       ? Center(
                           child: Text(
                           _mainNumber.toString(),
-                          style: Theme.of(context).textTheme.headline3,
+                          style: Theme.of(context).textTheme.headline4,
                         ))
                       : Column(mainAxisSize: MainAxisSize.min, children: [
                           Flexible(

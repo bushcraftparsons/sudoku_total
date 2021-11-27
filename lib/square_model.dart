@@ -28,7 +28,7 @@ class SquareModel extends ChangeNotifier {
   bool _selected = false;
   bool _selectedCollection = false;
 
-  setEditNumber(value) {
+  set editNumber(value) {
     switch (value) {
       case 1:
         _showEdit1 = !_showEdit1;
@@ -124,6 +124,7 @@ class SquareModel extends ChangeNotifier {
       create: (context) => this,
       child: Consumer<SquareModel>(
         builder: (context, square, child) => Square(
+          squareIndex: squareIndex,
           mainNumber: _mainNumber,
           answer: _answer,
           selected: _selected,
