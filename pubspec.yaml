@@ -63,6 +63,11 @@ flutter:
   assets:
    - assets/pennib.svg
    - assets/penciltip.svg
+   - assets/eraser.svg
+   - assets/undo.svg
+   - assets/pause.svg
+   - assets/hint.svg
+   - assets/newGame.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

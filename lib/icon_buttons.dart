@@ -13,6 +13,11 @@ class IconButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(mainAxisSize: MainAxisSize.min, children: const [
       Expanded(child: IconButton(board.Action.usePen)),
+      Expanded(child: IconButton(board.Action.erase)),
+      Expanded(child: IconButton(board.Action.hint)),
+      Expanded(child: IconButton(board.Action.newGame)),
+      Expanded(child: IconButton(board.Action.pause)),
+      Expanded(child: IconButton(board.Action.undo)),
     ]);
   }
 }
@@ -20,6 +25,11 @@ class IconButtons extends StatelessWidget {
 class IconButton extends StatefulWidget {
   static const String penIcon = 'assets/pennib.svg';
   static const String pencilIcon = 'assets/penciltip.svg';
+  static const String eraseIcon = 'assets/eraser.svg';
+  static const String undoIcon = 'assets/undo.svg';
+  static const String pauseIcon = 'assets/pause.svg';
+  static const String hintIcon = 'assets/hint.svg';
+  static const String newGameIcon = 'assets/newGame.svg';
   final board.Action _action;
   const IconButton(
     this._action, {
@@ -40,9 +50,7 @@ class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
     mainButtonColour = (board.LogicalBoard().pen)
         ? Theme.of(context).primaryColor
         : Theme.of(context).colorScheme.secondary;
-    _svg = (board.LogicalBoard().pen)
-        ? IconButton.penIcon
-        : IconButton.pencilIcon;
+    _svg = getSvg();
     decorationTween = DecorationTween(
       begin: BoxDecoration(
         gradient: RadialGradient(
@@ -71,14 +79,11 @@ class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
 
 
     board.LogicalBoard().usePenChange.addListener(() {
-      if (board.Action.usePen == widget._action) {
         setState(() {
           mainButtonColour = (board.LogicalBoard().pen)
               ? Theme.of(context).primaryColor
               : Theme.of(context).colorScheme.secondary;
-          _svg = (board.LogicalBoard().pen)
-              ? IconButton.penIcon
-              : IconButton.pencilIcon;
+          _svg = getSvg();
           decorationTween = DecorationTween(
             begin: BoxDecoration(
               gradient: RadialGradient(
@@ -105,7 +110,6 @@ class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
             ),
           );
         });
-      }
     });
 
     super.didChangeDependencies();
@@ -120,15 +124,15 @@ class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
           return IconButton.pencilIcon;
         }
       case board.Action.undo:
-        break;
+        return IconButton.undoIcon;
       case board.Action.pause:
-        break;
+        return IconButton.pauseIcon;
       case board.Action.newGame:
-        break;
+        return IconButton.newGameIcon;
       case board.Action.hint:
-        break;
+        return IconButton.hintIcon;
       case board.Action.erase:
-        break;
+        return IconButton.eraseIcon;
       default:
         return IconButton.penIcon;
     }
