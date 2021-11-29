@@ -39,8 +39,7 @@ class LogicalBoard {
     usePenChange = UsePenChange();
     pen = false;
     gm = GameCreator(squareModels, boxes, rows, cols);
-    gm.createSolution();
-    showAnswers();
+    gm.createGame();
   }
 
   late final List<SquareModel> squareModels;
@@ -59,6 +58,12 @@ class LogicalBoard {
       selectedSquare?.number = number;
     }
 
+  }
+
+  void erase(){
+    if(selectedSquare != null){
+      selectedSquare?.erase();
+    }
   }
 
   void setSelectedSquare(int squareIndex){

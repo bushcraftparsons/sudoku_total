@@ -143,7 +143,8 @@ class NumberButtonState extends State<NumberButton>
         repeatAnimationOnce();
         board.LogicalBoard().setNumber(widget._number);
       },
-      child: SizedBox(
+      child: Container(
+        padding: const EdgeInsets.all(2.0),
           width: 50,
           height: 100,
           child: DecoratedBoxTransition(
@@ -160,8 +161,8 @@ class NumberButtonState extends State<NumberButton>
                   Text(widget._number.toString(),
                       style: Theme.of(context).textTheme.headline4),
                    Positioned(
-                          top: 10,
-                          right: 18,
+                          top: 5,
+                          right: 10,
                           child: Transform.rotate(
                               angle: 45 * pi / 180,
                               child:SvgPicture.asset(

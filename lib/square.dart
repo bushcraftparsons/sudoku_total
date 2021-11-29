@@ -9,6 +9,7 @@ class Square extends StatelessWidget {
   final int _squareIndex;
   final int? _mainNumber;
   final int? _answer;
+  final bool _shown;
   final bool _showEdit1;
   final bool _showEdit2;
   final bool _showEdit3;
@@ -22,6 +23,7 @@ class Square extends StatelessWidget {
   final bool _selectedCollection;
   const Square({
     Key? key,
+    required bool shown,
     required int squareIndex,
     required int? mainNumber,
     required int? answer,
@@ -39,6 +41,7 @@ class Square extends StatelessWidget {
     required Color mainColour,
     required Color selectedColour,
   })  : _squareIndex = squareIndex,
+        _shown = shown,
         _mainNumber = mainNumber,
         _answer = answer,
         _showEdit1 = showEdit1,
@@ -58,8 +61,22 @@ class Square extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: InkWell(
+    TextStyle? style = Theme.of(context).textTheme.headline4;
+    if(_shown){
+      style = style?.apply(
+        color:Theme.of(context).primaryColorDark
+      );
+    }else if(!_shown && _answer==_mainNumber){
+      style = style?.apply(
+          color:Theme.of(context).primaryColorDark.withOpacity(0.6)
+      );
+    }else{
+      style = style?.apply(
+          color:Theme.of(context).errorColor
+      );
+    }
+
+    return InkWell(
             onTap: () => LogicalBoard().setSelectedSquare(_squareIndex),
             child: Container(
               padding: const EdgeInsets.all(2.0),
@@ -81,7 +98,7 @@ class Square extends StatelessWidget {
                       ? Center(
                           child: Text(
                           _mainNumber.toString(),
-                          style: Theme.of(context).textTheme.headline4,
+                          style: style,
                         ))
                       : Column(mainAxisSize: MainAxisSize.min, children: [
                           Flexible(
@@ -145,6 +162,6 @@ class Square extends StatelessWidget {
                                 ))
                               ]))
                         ])),
-            )));
+            ));
   }
 }

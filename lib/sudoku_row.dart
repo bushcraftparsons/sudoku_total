@@ -16,18 +16,18 @@ class SudokuRow extends StatefulWidget {
 class _SudokuRowState extends State<SudokuRow> {
   @override
   Widget build(BuildContext context) {
-    return Flexible(child:Row(mainAxisSize: MainAxisSize.min, children: [
-      widget.squareList.elementAt(0).getSquare(),
-      widget.squareList.elementAt(1).getSquare(),
-      widget.squareList.elementAt(2).getSquare(),
-      const SizedBox(width: 2),
-      widget.squareList.elementAt(3).getSquare(),
-      widget.squareList.elementAt(4).getSquare(),
-      widget.squareList.elementAt(5).getSquare(),
-      const SizedBox(width: 2),
-      widget.squareList.elementAt(6).getSquare(),
-      widget.squareList.elementAt(7).getSquare(),
-      widget.squareList.elementAt(8).getSquare()
-    ]));
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      Expanded(child: widget.squareList.elementAt(0).getSquare()),
+    Expanded(child:widget.squareList.elementAt(1).getSquare()),
+    Expanded(child:widget.squareList.elementAt(2).getSquare()),
+    const SizedBox(width: 2),
+    Expanded(child:widget.squareList.elementAt(3).getSquare()),
+    Expanded(child:widget.squareList.elementAt(4).getSquare()),
+    Expanded(child:widget.squareList.elementAt(5).getSquare()),
+    const SizedBox(width: 2),
+    Expanded(child: widget.squareList.elementAt(6).getSquare()),
+    Expanded(child: widget.squareList.elementAt(7).getSquare()),
+    Expanded(child: widget.squareList.elementAt(8).getSquare())
+    ]);
   }
 }

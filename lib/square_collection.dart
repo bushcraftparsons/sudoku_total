@@ -14,17 +14,69 @@ abstract class SquareCollection {
     Set<int> values = {};
     for(SquareModel sq in squareList){
       int? sqAnswer = sq.answer;
-      if(sqAnswer!= null){
+      if(sqAnswer!= 0){
         values.add(sqAnswer);
       }
     }
     return values;
   }
 
+  Set<LogicalBox> getBoxes(){
+    Set<LogicalBox> boxes = {};
+    for(SquareModel sq in squareList){
+      boxes.add(sq.box);
+    }
+    return boxes;
+  }
+
+  void showSolution(int solution){
+    for(SquareModel sq in squareList){
+      if(sq.answer == solution){
+        if(sq.isCalculable()){
+          //No need to show answer, it is calculable
+          return;
+        }
+        sq.showAnswer();
+        return;
+      }
+    }
+  }
+
+  List<SquareModel> getHeadSet(SquareModel toSquare){
+    int indexInCollection = squareList.indexWhere((element) => element.squareIndex==toSquare.squareIndex);
+    return squareList.sublist(0, indexInCollection);
+  }
+
+  List<SquareModel> getTailSetExclusive(SquareModel notThisOne){
+    int indexInCollection = squareList.indexWhere((element) => element.squareIndex==notThisOne.squareIndex);
+    return squareList.sublist(indexInCollection + 1, squareList.length);
+  }
+
+  List<SquareModel> getRestOfSet(SquareModel notThisOne) {
+    List<SquareModel> results = [];
+    results.addAll(getHeadSet(notThisOne));
+    results.addAll(getTailSetExclusive(notThisOne));
+    results.sort(squareComparator);
+    return results;
+  }
+
+  bool isLastSolution(int solution){
+    int solutionCount = 0;
+    for(SquareModel sq in squareList){
+      if(sq.possibleSolutions.contains(solution)){
+        solutionCount++;
+        if(solutionCount>1){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   Set<int> getPossibleAnswers(){
     Set<int> result = {};
     for(SquareModel square in squareList){
-      if(square.answer==null){
+      if(square.answer==0){
         result.addAll(square.possibleAnswers());
       }
     }
@@ -40,7 +92,7 @@ abstract class SquareCollection {
   List<SquareModel> getSquaresWithNoAnswer(){
     List<SquareModel> result = [];
     for(SquareModel sq in squareList){
-      if(sq.answer == null){
+      if(sq.answer == 0){
         result.add(sq);
       }
     }
@@ -50,7 +102,7 @@ abstract class SquareCollection {
 
   bool containsAnswer(int answer){
     for(SquareModel sq in squareList){
-      if(sq.answer != null && sq.answer == answer){
+      if(sq.answer != 0 && sq.answer == answer){
         return true;
       }
     }
@@ -60,7 +112,7 @@ abstract class SquareCollection {
   List<SquareModel> getSquaresWithOneAnswer(){
     List<SquareModel> result = [];
     for(SquareModel sq in squareList){
-      if(sq.answer==null && sq.possibleAnswers().length==1){
+      if(sq.answer==0 && sq.possibleAnswers().length==1){
         result.add(sq);
       }
     }
@@ -86,7 +138,7 @@ class LogicalBox extends SquareCollection {
   Set<int> getPossibleAnswersForRow(int rowNumber){
     Set<int> result = {};
     for(SquareModel sq in squareList){
-      if(sq.rowIndex==rowNumber && sq.answer==null){
+      if(sq.rowIndex==rowNumber && sq.answer==0){
         result.addAll(sq.possibleAnswers());
       }
     }
@@ -96,7 +148,7 @@ class LogicalBox extends SquareCollection {
   List<SquareModel> getSquaresInRowWithNoAnswer(int rowNumber){
     List<SquareModel> results = [];
     for(SquareModel sq in squareList){
-      if(sq.rowIndex==rowNumber && sq.answer==null){
+      if(sq.rowIndex==rowNumber && sq.answer==0){
         results.add(sq);
       }
     }

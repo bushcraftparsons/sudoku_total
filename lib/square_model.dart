@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:sudoku_total/logical_board.dart';
 import 'package:sudoku_total/square.dart';
 import 'package:sudoku_total/square_collection.dart';
-int compareSquares(SquareModel a, SquareModel b) => a.squareIndex.compareTo(b.squareIndex);
+
+int compareSquares(SquareModel a, SquareModel b) =>
+    a.squareIndex.compareTo(b.squareIndex);
 Comparator<SquareModel> squareComparator = compareSquares;
 
 class SquareModel extends ChangeNotifier {
@@ -19,7 +21,7 @@ class SquareModel extends ChangeNotifier {
   SquareModel(this.squareIndex, this.rowIndex, this.colIndex, this.boxIndex);
 
   int? _mainNumber;
-  int? _answer;
+  late int _answer = 0;
   bool _showEdit1 = false;
   bool _showEdit2 = false;
   bool _showEdit3 = false;
@@ -32,13 +34,23 @@ class SquareModel extends ChangeNotifier {
   bool _selected = false;
   bool _selectedCollection = false;
 
+  /// true if shown at the start of the game
+  bool _shown = false;
+
+  /// true if square is calculable from the show solutions
+  bool _calculable = false;
+
+  /// Solutions which are still possible for this square given the game board.
+  /// Used when calculating which squares to show.
+  Set<int> _possibleSolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
   void penChanged() {
     notifyListeners();
   }
 
   set editNumber(value) {
-    if(_mainNumber!=_answer){
-      _mainNumber=null;
+    if (_mainNumber != _answer) {
+      _mainNumber = null;
     }
     switch (value) {
       case 1:
@@ -105,17 +117,58 @@ class SquareModel extends ChangeNotifier {
   int? get mainNumber => _mainNumber;
 
   set number(int? value) {
-    if(LogicalBoard().pen){
-      _mainNumber = value;
-    }else{
-      editNumber = value;
+    if (_mainNumber != _answer && !_shown) {
+      //Square not editable when it is shown as a starting square, nor
+      //after the correct answer has been added
+      if (LogicalBoard().pen) {
+        //Setting the main number
+        if (_mainNumber == value) {
+          _mainNumber = null;
+        } else {
+          _mainNumber = value;
+        }
+      } else {
+        //Setting the edit numbers
+        if (_mainNumber != null) {
+          _mainNumber = null;
+        }
+        editNumber = value;
+      }
+      notifyListeners();
     }
-    notifyListeners();
   }
 
-  int? get answer => _answer;
+  get possibleSolutions => _possibleSolutions;
 
-  set answer(int? value) {
+  int? getCalculableAnswer() {
+    if (_shown || isCalculable()) {
+      return _answer;
+    } else {
+      return null;
+    }
+  }
+
+  bool hasHiddenSingle() {
+    bool hasHiddenSingle = (row.isLastSolution(_answer) ||
+        col.isLastSolution(_answer) ||
+        box.isLastSolution(_answer));
+    if (hasHiddenSingle) {
+      calculable = true;
+    }
+    return hasHiddenSingle;
+  }
+
+  bool get shown => _shown;
+
+  bool isCalculable() {
+    return _calculable || hasHiddenSingle();
+  }
+
+  set calculable(bool calculable) => _calculable = calculable;
+
+  int get answer => _answer;
+
+  set answer(int value) {
     _answer = value;
     notifyListeners();
   }
@@ -134,8 +187,58 @@ class SquareModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showAnswer(){
-    _mainNumber=_answer;
+  void removePossibleSolution(int possibleSolution) {
+    _possibleSolutions.remove(possibleSolution);
+    if (_possibleSolutions.length == 1) {
+      _calculable = true;
+    }
+  }
+
+  void showAnswer() {
+    if (_answer != 0) {
+      _possibleSolutions.clear();
+      _possibleSolutions.add(_answer);
+      //Remove the answer from possible solutions in other squares in
+      //the row, col and box
+      for (SquareModel sq in col.getRestOfSet(this)) {
+        sq.removePossibleSolution(_answer);
+      }
+      for (SquareModel sq in row.getRestOfSet(this)) {
+        sq.removePossibleSolution(_answer);
+      }
+      for (SquareModel sq in box.getRestOfSet(this)) {
+        sq.removePossibleSolution(_answer);
+      }
+      _mainNumber = _answer;
+      _shown = true;
+      _calculable = true;
+      notifyListeners();
+    }
+  }
+
+  void erase() {
+    if (_mainNumber != _answer || _answer == 0) {
+      _mainNumber = null;
+      _showEdit1 = false;
+      _showEdit2 = false;
+      _showEdit3 = false;
+      _showEdit4 = false;
+      _showEdit5 = false;
+      _showEdit6 = false;
+      _showEdit7 = false;
+      _showEdit8 = false;
+      _showEdit9 = false;
+      notifyListeners();
+    }
+  }
+
+  /// Resets the square ready for a new game
+  void reset() {
+    _answer = 0;
+    erase();
+    _shown = false;
+    _calculable = false;
+    _possibleSolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     notifyListeners();
   }
 
@@ -152,28 +255,30 @@ class SquareModel extends ChangeNotifier {
   getSquare() {
     return ChangeNotifierProvider(
         create: (context) => this,
-        child: Consumer<SquareModel>(
-          builder: (context, square, child) {
-            return Square(
-              selectedColour: LogicalBoard().pen?Theme.of(context).backgroundColor:Theme.of(context).colorScheme.background,
-              mainColour: LogicalBoard().pen?Theme.of(context).primaryColor:Theme.of(context).colorScheme.secondary,
-              squareIndex: squareIndex,
-              mainNumber: _mainNumber,
-              answer: _answer,
-              selected: _selected,
-              selectedCollection: _selectedCollection,
-              showEdit1: _showEdit1,
-              showEdit2: _showEdit2,
-              showEdit3: _showEdit3,
-              showEdit4: _showEdit4,
-              showEdit5: _showEdit5,
-              showEdit6: _showEdit6,
-              showEdit7: _showEdit7,
-              showEdit8: _showEdit8,
-              showEdit9: _showEdit9,
-            );
-          }
-
-        ));
+        child: Consumer<SquareModel>(builder: (context, square, child) {
+          return Square(
+            shown: _shown,
+            selectedColour: LogicalBoard().pen
+                ? Theme.of(context).backgroundColor
+                : Theme.of(context).colorScheme.background,
+            mainColour: LogicalBoard().pen
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).colorScheme.secondary,
+            squareIndex: squareIndex,
+            mainNumber: _mainNumber,
+            answer: _answer,
+            selected: _selected,
+            selectedCollection: _selectedCollection,
+            showEdit1: _showEdit1,
+            showEdit2: _showEdit2,
+            showEdit3: _showEdit3,
+            showEdit4: _showEdit4,
+            showEdit5: _showEdit5,
+            showEdit6: _showEdit6,
+            showEdit7: _showEdit7,
+            showEdit8: _showEdit8,
+            showEdit9: _showEdit9,
+          );
+        }));
   }
 }

@@ -136,7 +136,6 @@ class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
       default:
         return IconButton.penIcon;
     }
-    return IconButton.penIcon;
   }
 
   late final AnimationController _controller = AnimationController(
@@ -167,6 +166,7 @@ class IconButtonState extends State<IconButton> with TickerProviderStateMixin {
             board.LogicalBoard().usePenChange.setPen(!board.LogicalBoard().pen);
             break;
           case board.Action.erase:
+            board.LogicalBoard().erase();
             break;
           case board.Action.hint:
             break;

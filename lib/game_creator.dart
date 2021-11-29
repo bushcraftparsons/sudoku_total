@@ -1,8 +1,7 @@
+import 'package:sudoku_total/level_maker.dart';
 import 'package:sudoku_total/square_collection.dart';
 import 'package:sudoku_total/square_model.dart';
 import 'package:sudoku_total/utils.dart';
-
-import 'logical_board.dart';
 
 class GameCreator{
   late final List<SquareModel> squareModels;
@@ -13,12 +12,24 @@ class GameCreator{
 
   GameCreator(this.squareModels, this.boxes, this.rows, this.cols);
 
+  void createGame(){
+    for(SquareModel sq in squareModels){
+      sq.reset();
+    }
+    //Create new sudoku solution
+    createSolution();
+    LevelMaker lm = LevelMaker(squareModels, boxes, rows, cols);
+    lm.makeEasy();
+
+    //TODO Save game state to persistent storage
+  }
+
   void createSolution (){
     for(SquareModel sq in squareModels){
       int countBacktracks = 1;
       while(!_processSquare(sq)){//If successful, then carrying on
         //There was no value for this square, need to backtrack
-        sq.answer = null;
+        sq.answer = 0;
         _backtrack(sq, countBacktracks);
         countBacktracks++;
       }
@@ -45,7 +56,7 @@ class GameCreator{
     //Set possible answers to null except for the first square
     //Set all backtrack square to null answers
     for(SquareModel square in backTrackSquares){
-      square.answer = null;
+      square.answer = 0;
     }
     //Now process them again
     for(SquareModel square in backTrackSquares){
@@ -70,16 +81,14 @@ class GameCreator{
       }
     }
     //Answer was no good.
-    square.answer = null;
+    square.answer = 0;
     return false;
   }
 
-  /**
-   * Helper method for creating a sudoku solution
-   * For rest of squares, make sure all still have a possible answer
-   * @param square The square to be checked
-   * @return Returns true if there is still a possible answer for this square, false if not
-   */
+  /// Helper method for creating a sudoku solution
+  /// For rest of squares, make sure all still have a possible answer
+  /// @param square The square to be checked
+  /// @return Returns true if there is still a possible answer for this square, false if not
   bool _passRestOfSquareCheck (SquareModel square){
     for(int index = square.squareIndex + 1; index<squareModels.length; index++){
       SquareModel sq = squareModels[index];
