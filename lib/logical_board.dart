@@ -1,24 +1,67 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sudoku_total/square_model.dart';
 import 'package:sudoku_total/sudoku_row.dart';
 import 'package:sudoku_total/square_collection.dart';
 
+import 'game_creator.dart';
+enum Action {
+  usePen,
+  erase,
+  undo,
+  newGame,
+  hint,
+  pause
+}
+
+class UsePenChange extends ChangeNotifier{
+  void setPen(bool usePen){
+    LogicalBoard().pen = usePen;
+    for(SquareModel sq in LogicalBoard().squareModels){
+      sq.penChanged();
+    }
+    notifyListeners();
+  }
+}
+
 class LogicalBoard {
-  static final List<SquareModel> squareModels = _initSquares();
-  static final List<SudokuRow> rowsWidgets = _initRowsWidgets();
-  static final List<LogicalBox> boxes = _initBoxes();
-  static final List<LogicalRow> rows = _initRows();
-  static final List<LogicalCol> cols = _initCols();
+  static final LogicalBoard _instance = LogicalBoard._internal();
 
-  static SquareModel? selectedSquare;
+  factory LogicalBoard(){
+    return _instance;
+  }
 
-  static void setNumber(int number){
+  LogicalBoard._internal(){
+    squareModels = _initSquares();
+    rowsWidgets = _initRowsWidgets();
+    boxes = _initBoxes();
+    rows = _initRows();
+    cols = _initCols();
+    usePenChange = UsePenChange();
+    pen = false;
+    gm = GameCreator(squareModels, boxes, rows, cols);
+    gm.createSolution();
+    showAnswers();
+  }
+
+  late final List<SquareModel> squareModels;
+  late final List<SudokuRow> rowsWidgets;
+  late final List<LogicalBox> boxes;
+  late final List<LogicalRow> rows;
+  late final List<LogicalCol> cols;
+  late final UsePenChange usePenChange;
+  late bool pen;
+  late final GameCreator gm;
+
+  SquareModel? selectedSquare;
+
+  void setNumber(int number){
     if(selectedSquare != null){
-      selectedSquare?.mainNumber = number;
+      selectedSquare?.number = number;
     }
 
   }
 
-  static void setSelectedSquare(int squareIndex){
+  void setSelectedSquare(int squareIndex){
     selectedSquare = squareModels[squareIndex];
     for (var sm in squareModels) {
       sm.selected = (sm.squareIndex==squareIndex);
@@ -26,33 +69,46 @@ class LogicalBoard {
     }
   }
 
+  void showAnswers(){
+    for(SquareModel sq in squareModels){
+      sq.showAnswer();
+    }
+  }
 
-
-  static List<LogicalBox> _initBoxes(){
+  List<LogicalBox> _initBoxes(){
     List<LogicalBox> boxes = [];
     for(var i = 0; i<9; i++){
       boxes.add(LogicalBox(_getBoxSquares(i)));
     }
+    for(SquareModel sq in squareModels){
+      sq.box = boxes[sq.boxIndex];
+    }
     return List.unmodifiable(boxes);
   }
 
-  static List<LogicalRow> _initRows(){
+  List<LogicalRow> _initRows(){
     List<LogicalRow> rows = [];
     for(var i = 0; i<9; i++){
       rows.add(LogicalRow(_getRowSquares(i)));
     }
+    for(SquareModel sq in squareModels){
+      sq.row = rows[sq.rowIndex];
+    }
     return List.unmodifiable(rows);
   }
 
-  static List<LogicalCol> _initCols(){
-    List<LogicalCol> boxes = [];
+  List<LogicalCol> _initCols(){
+    List<LogicalCol> cols = [];
     for(var i = 0; i<9; i++){
-      boxes.add(LogicalCol(_getColSquares(i)));
+      cols.add(LogicalCol(_getColSquares(i)));
     }
-    return List.unmodifiable(boxes);
+    for(SquareModel sq in squareModels){
+      sq.col = cols[sq.colIndex];
+    }
+    return List.unmodifiable(cols);
   }
 
-  static List<SudokuRow> _initRowsWidgets() {
+  List<SudokuRow> _initRowsWidgets() {
     List<SudokuRow> rows = [];
     for(var i = 0; i<9; i++){
       rows.add(SudokuRow(_getRowSquares(i), i));
@@ -60,19 +116,19 @@ class LogicalBoard {
     return List.unmodifiable(rows);
   }
 
-  static List<SquareModel> _getRowSquares(int rowIndex){
+  List<SquareModel> _getRowSquares(int rowIndex){
     return List.unmodifiable(squareModels.where((element) => element.rowIndex == rowIndex));
   }
 
-  static List<SquareModel> _getColSquares(int colIndex){
+  List<SquareModel> _getColSquares(int colIndex){
     return List.unmodifiable(squareModels.where((element) => element.colIndex == colIndex));
   }
 
-  static List<SquareModel> _getBoxSquares(int boxIndex){
+  List<SquareModel> _getBoxSquares(int boxIndex){
     return List.unmodifiable(squareModels.where((element) => element.boxIndex == boxIndex));
   }
 
-  static List<SquareModel> _initSquares() {
+  List<SquareModel> _initSquares() {
     List<SquareModel> initSquares = [];
     //Initialise squares with squareIndex, rowIndex, colIndex and boxIndex
     int squareIndex = 0;
@@ -82,8 +138,9 @@ class LogicalBoard {
     int boxStartIndex = 0;
     int boxIndex = 0;
     for (var count = 1; count < 82; count++) {
+      SquareModel newSquare = SquareModel(squareIndex, rowIndex, colIndex, boxIndex);
       //Add row, col and box index to the new square
-      initSquares.add(SquareModel(squareIndex, rowIndex, colIndex, boxIndex));
+      initSquares.add(newSquare);
       //Every square
       //col index increments
       colIndex++;

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'logical_board.dart';
 
 class Square extends StatelessWidget {
+  final Color _mainColour;
+  final Color _selectedColour;
   final int _squareIndex;
   final int? _mainNumber;
   final int? _answer;
@@ -34,6 +36,8 @@ class Square extends StatelessWidget {
     required bool showEdit9,
     required bool selected,
     required bool selectedCollection,
+    required Color mainColour,
+    required Color selectedColour,
   })  : _squareIndex = squareIndex,
         _mainNumber = mainNumber,
         _answer = answer,
@@ -48,13 +52,15 @@ class Square extends StatelessWidget {
         _showEdit9 = showEdit9,
         _selected = selected,
         _selectedCollection = selectedCollection,
+        _mainColour = mainColour,
+  _selectedColour = selectedColour,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Material(
         child: InkWell(
-            onTap: () => LogicalBoard.setSelectedSquare(_squareIndex),
+            onTap: () => LogicalBoard().setSelectedSquare(_squareIndex),
             child: Container(
               padding: const EdgeInsets.all(2.0),
               color: _selected
@@ -67,8 +73,8 @@ class Square extends StatelessWidget {
                       ? const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 2.0)
                       : const EdgeInsets.all(0.0),
                   color: _selectedCollection
-                      ? Theme.of(context).backgroundColor
-                      : Theme.of(context).primaryColor,
+                      ? _selectedColour
+                      : _mainColour,
                   width: 46.0,
                   height: 46.0,
                   child: _mainNumber != null

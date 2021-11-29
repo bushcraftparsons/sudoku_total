@@ -26,7 +26,9 @@ class TotalSudokuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Total Sudoku',
-      theme: sudokuThemeLight,
+      theme: sudokuThemeLight.copyWith(
+        colorScheme: sudokuThemeLight.colorScheme.copyWith(secondary: Colors.amber[300], background: Colors.amber[50]),
+      ),
       home: Scaffold(
           appBar: AppBar(
             title: const Text('Total Sudoku'),

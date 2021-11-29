@@ -1,16 +1,20 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sudoku_total/logical_board.dart';
 import 'package:sudoku_total/square.dart';
 import 'package:sudoku_total/square_collection.dart';
+int compareSquares(SquareModel a, SquareModel b) => a.squareIndex.compareTo(b.squareIndex);
+Comparator<SquareModel> squareComparator = compareSquares;
 
 class SquareModel extends ChangeNotifier {
   final int squareIndex;
   final int rowIndex;
   final int colIndex;
   final int boxIndex;
-  LogicalBox? box;
-  LogicalRow? row;
-  LogicalCol? col;
+  late LogicalBox box;
+  late LogicalRow row;
+  late LogicalCol col;
 
   SquareModel(this.squareIndex, this.rowIndex, this.colIndex, this.boxIndex);
 
@@ -28,7 +32,14 @@ class SquareModel extends ChangeNotifier {
   bool _selected = false;
   bool _selectedCollection = false;
 
+  void penChanged() {
+    notifyListeners();
+  }
+
   set editNumber(value) {
+    if(_mainNumber!=_answer){
+      _mainNumber=null;
+    }
     switch (value) {
       case 1:
         _showEdit1 = !_showEdit1;
@@ -57,7 +68,6 @@ class SquareModel extends ChangeNotifier {
       case 9:
         _showEdit9 = !_showEdit9;
     }
-    notifyListeners();
   }
 
   List<int> getEditNumbers() {
@@ -94,8 +104,12 @@ class SquareModel extends ChangeNotifier {
 
   int? get mainNumber => _mainNumber;
 
-  set mainNumber(int? value) {
-    _mainNumber = value;
+  set number(int? value) {
+    if(LogicalBoard().pen){
+      _mainNumber = value;
+    }else{
+      editNumber = value;
+    }
     notifyListeners();
   }
 
@@ -120,24 +134,46 @@ class SquareModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  getSquare() => ChangeNotifierProvider(
-      create: (context) => this,
-      child: Consumer<SquareModel>(
-        builder: (context, square, child) => Square(
-          squareIndex: squareIndex,
-          mainNumber: _mainNumber,
-          answer: _answer,
-          selected: _selected,
-          selectedCollection: _selectedCollection,
-          showEdit1: _showEdit1,
-          showEdit2: _showEdit2,
-          showEdit3: _showEdit3,
-          showEdit4: _showEdit4,
-          showEdit5: _showEdit5,
-          showEdit6: _showEdit6,
-          showEdit7: _showEdit7,
-          showEdit8: _showEdit8,
-          showEdit9: _showEdit9,
-        ),
-      ));
+  void showAnswer(){
+    _mainNumber=_answer;
+    notifyListeners();
+  }
+
+  Set<int> possibleAnswers() {
+    //Create the set
+    Set<int> possibleAnswers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    //Remove the ones already in the row, col or box
+    row.removeDuplicates(possibleAnswers);
+    col.removeDuplicates(possibleAnswers);
+    box.removeDuplicates(possibleAnswers);
+    return possibleAnswers;
+  }
+
+  getSquare() {
+    return ChangeNotifierProvider(
+        create: (context) => this,
+        child: Consumer<SquareModel>(
+          builder: (context, square, child) {
+            return Square(
+              selectedColour: LogicalBoard().pen?Theme.of(context).backgroundColor:Theme.of(context).colorScheme.background,
+              mainColour: LogicalBoard().pen?Theme.of(context).primaryColor:Theme.of(context).colorScheme.secondary,
+              squareIndex: squareIndex,
+              mainNumber: _mainNumber,
+              answer: _answer,
+              selected: _selected,
+              selectedCollection: _selectedCollection,
+              showEdit1: _showEdit1,
+              showEdit2: _showEdit2,
+              showEdit3: _showEdit3,
+              showEdit4: _showEdit4,
+              showEdit5: _showEdit5,
+              showEdit6: _showEdit6,
+              showEdit7: _showEdit7,
+              showEdit8: _showEdit8,
+              showEdit9: _showEdit9,
+            );
+          }
+
+        ));
+  }
 }

@@ -1,7 +1,11 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'dart:math';
 
-import 'logical_board.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' hide IconButton;
+import 'package:flutter_svg/svg.dart';
+
+import 'icon_buttons.dart';
+import 'logical_board.dart' as board;
 
 class NumberButtons extends StatelessWidget {
   const NumberButtons({
@@ -37,6 +41,83 @@ class NumberButton extends StatefulWidget {
 
 class NumberButtonState extends State<NumberButton>
     with TickerProviderStateMixin {
+  late Color mainButtonColour;
+  late String _svg;
+  late DecorationTween decorationTween;
+
+  @override
+  void didChangeDependencies() {
+    mainButtonColour = (board.LogicalBoard().pen)
+        ? Theme.of(context).primaryColor
+        : Theme.of(context).colorScheme.secondary;
+    _svg =
+        (board.LogicalBoard().pen) ? IconButton.penIcon : IconButton.pencilIcon;
+    decorationTween = DecorationTween(
+      begin: BoxDecoration(
+        gradient: RadialGradient(
+          radius: 0.8,
+          colors: [
+            mainButtonColour,
+            mainButtonColour,
+          ],
+        ),
+        border:
+            Border.all(color: Theme.of(context).primaryColorDark, width: 2.0),
+        borderRadius: const BorderRadius.all(Radius.elliptical(50, 100)),
+      ),
+      end: BoxDecoration(
+        gradient: RadialGradient(
+          radius: 0.8,
+          colors: [
+            Theme.of(context).canvasColor,
+            mainButtonColour,
+          ],
+        ),
+        border: Border.all(color: Theme.of(context).primaryColor, width: 5.0),
+        borderRadius: const BorderRadius.all(Radius.elliptical(50, 100)),
+      ),
+    );
+
+    board.LogicalBoard().usePenChange.addListener(() {
+      setState(() {
+        mainButtonColour = (board.LogicalBoard().pen)
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).colorScheme.secondary;
+        _svg = (board.LogicalBoard().pen)
+            ? IconButton.penIcon
+            : IconButton.pencilIcon;
+        decorationTween = DecorationTween(
+          begin: BoxDecoration(
+            gradient: RadialGradient(
+              radius: 0.8,
+              colors: [
+                mainButtonColour,
+                mainButtonColour,
+              ],
+            ),
+            border: Border.all(
+                color: Theme.of(context).primaryColorDark, width: 2.0),
+            borderRadius: const BorderRadius.all(Radius.elliptical(50, 100)),
+          ),
+          end: BoxDecoration(
+            gradient: RadialGradient(
+              radius: 0.8,
+              colors: [
+                Theme.of(context).canvasColor,
+                mainButtonColour,
+              ],
+            ),
+            border:
+                Border.all(color: Theme.of(context).primaryColor, width: 5.0),
+            borderRadius: const BorderRadius.all(Radius.elliptical(50, 100)),
+          ),
+        );
+      });
+    });
+
+    super.didChangeDependencies();
+  }
+
   late final AnimationController _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 5),
@@ -56,37 +137,11 @@ class NumberButtonState extends State<NumberButton>
 
   @override
   Widget build(BuildContext context) {
-    final DecorationTween decorationTween = DecorationTween(
-      begin: BoxDecoration(
-        gradient: RadialGradient(
-          radius: 0.8,
-          colors: [
-            Theme.of(context).primaryColor,
-            Theme.of(context).primaryColor,
-          ],
-        ),
-        border:
-            Border.all(color: Theme.of(context).primaryColorDark, width: 2.0),
-        borderRadius: const BorderRadius.all(Radius.elliptical(50, 100)),
-      ),
-      end: BoxDecoration(
-        gradient: RadialGradient(
-          radius: 0.8,
-          colors: [
-            Theme.of(context).canvasColor,
-            Theme.of(context).primaryColor,
-          ],
-        ),
-        border: Border.all(color: Theme.of(context).primaryColor, width: 5.0),
-        borderRadius: const BorderRadius.all(Radius.elliptical(50, 100)),
-      ),
-    );
-
     return Align(
         child: GestureDetector(
       onTap: () {
         repeatAnimationOnce();
-        LogicalBoard.setNumber(widget._number);
+        board.LogicalBoard().setNumber(widget._number);
       },
       child: SizedBox(
           width: 50,
@@ -97,9 +152,25 @@ class NumberButtonState extends State<NumberButton>
                 parent: _controller,
                 curve: Curves.decelerate,
                 reverseCurve: Curves.easeOut)),
-            child: Center(
-                child: Text(widget._number.toString(),
-                    style: Theme.of(context).textTheme.headline4)),
+            child: Stack(
+                alignment: Alignment.center,
+                fit: StackFit.loose,
+                clipBehavior: Clip.hardEdge,
+                children: [
+                  Text(widget._number.toString(),
+                      style: Theme.of(context).textTheme.headline4),
+                   Positioned(
+                          top: 10,
+                          right: 18,
+                          child: Transform.rotate(
+                              angle: 45 * pi / 180,
+                              child:SvgPicture.asset(
+                            _svg,
+                            color: Theme.of(context).primaryColorDark,
+                            height: 25,
+                            width: 25,
+                          )))
+                ]),
           )),
     ));
   }
