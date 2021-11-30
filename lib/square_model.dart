@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -250,6 +252,52 @@ class SquareModel extends ChangeNotifier {
     col.removeDuplicates(possibleAnswers);
     box.removeDuplicates(possibleAnswers);
     return possibleAnswers;
+  }
+
+  Map<String, Object> getSquareState() {
+    return {
+      'squareIndex': squareIndex,
+      '_mainNumber': _mainNumber.toString(),
+      '_answer': _answer,
+      '_showEdit1': _showEdit1,
+      '_showEdit2': _showEdit2,
+      '_showEdit3': _showEdit3,
+      '_showEdit4': _showEdit4,
+      '_showEdit5': _showEdit5,
+      '_showEdit6': _showEdit6,
+      '_showEdit7': _showEdit7,
+      '_showEdit8': _showEdit8,
+      '_showEdit9': _showEdit9,
+      '_selected': _selected,
+      '_selectedCollection': _selectedCollection,
+      '_shown': _shown,
+      '_calculable': _calculable,
+      '_possibleSolutions': _possibleSolutions.toList(),
+    };
+  }
+
+  void setSquareState(Map<String, dynamic> state){
+    print("State for one square " + json.encode(state));
+    if(state['_mainNumber'] == 'null'){
+      _mainNumber=null;
+    }else{
+      _mainNumber=int.parse(state['_mainNumber']);
+    }
+    _answer = state['_answer'] as int;
+    _showEdit1 = state['_showEdit1'] as bool;
+    _showEdit2 = state['_showEdit2'] as bool;
+    _showEdit3 = state['_showEdit3'] as bool;
+    _showEdit4 = state['_showEdit4'] as bool;
+    _showEdit5 = state['_showEdit5'] as bool;
+    _showEdit6 = state['_showEdit6'] as bool;
+    _showEdit7 = state['_showEdit7'] as bool;
+    _showEdit8 = state['_showEdit8'] as bool;
+    _showEdit9 = state['_showEdit9'] as bool;
+    _selected = state['_selected'] as bool;
+    _selectedCollection = state['_selectedCollection'] as bool;
+    _shown = state['_shown'] as bool;
+    _calculable = state['_calculable'] as bool;
+    _possibleSolutions = ((state['_possibleSolutions'].cast<int>())).toSet();
   }
 
   getSquare() {

@@ -3,6 +3,8 @@ import 'package:sudoku_total/square_collection.dart';
 import 'package:sudoku_total/square_model.dart';
 import 'package:sudoku_total/utils.dart';
 
+import 'logical_board.dart';
+
 class GameCreator{
   late final List<SquareModel> squareModels;
   late final List<LogicalBox> boxes;
@@ -12,7 +14,7 @@ class GameCreator{
 
   GameCreator(this.squareModels, this.boxes, this.rows, this.cols);
 
-  void createGame(){
+  void createGame(Level lvl){
     for(SquareModel sq in squareModels){
       sq.reset();
     }

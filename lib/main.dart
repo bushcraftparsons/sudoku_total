@@ -2,13 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:sudoku_total/icon_buttons.dart';
-import 'package:sudoku_total/sudoku_board.dart';
+import 'package:sudoku_total/choose_route.dart';
+import 'package:sudoku_total/play_route.dart';
+import 'package:sudoku_total/state_persistor.dart';
+import 'logical_board.dart';
 
-import 'number_buttons.dart';
-
-void main() => runApp(const TotalSudokuApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  readState().then((state) {
+    print("Have just read the state " + jsonEncode(state));
+    if (state.isNotEmpty) {
+      LogicalBoard().setState(state);
+    }
+    runApp(TotalSudokuApp(state));
+  });
+}
 
 final ThemeData sudokuThemeLight = ThemeData(
   primarySwatch: Colors.teal,
@@ -18,7 +29,9 @@ final ThemeData sudokuThemeLight = ThemeData(
 );
 
 class TotalSudokuApp extends StatelessWidget {
-  const TotalSudokuApp({
+  final Map<String, dynamic> state;
+  const TotalSudokuApp(
+    this.state, {
     Key? key,
   }) : super(key: key);
 
@@ -27,19 +40,10 @@ class TotalSudokuApp extends StatelessWidget {
     return MaterialApp(
       title: 'Total Sudoku',
       theme: sudokuThemeLight.copyWith(
-        colorScheme: sudokuThemeLight.colorScheme.copyWith(secondary: Colors.amber[300], background: Colors.amber[50]),
+        colorScheme: sudokuThemeLight.colorScheme.copyWith(
+            secondary: Colors.amber[300], background: Colors.amber[50]),
       ),
-      home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Total Sudoku'),
-          ),
-          body: Column(mainAxisSize: MainAxisSize.min, children: const [
-            SudokuBoard(),
-            SizedBox(height: 10),
-            NumberButtons(),
-            SizedBox(height: 10),
-            IconButtons()
-          ])),
+      home: state.isEmpty ? const ChooseRoute() : const PlayRoute(),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sudoku_total/square_model.dart';
+import 'package:sudoku_total/state_persistor.dart';
 import 'package:sudoku_total/sudoku_row.dart';
 import 'package:sudoku_total/square_collection.dart';
 
@@ -11,6 +12,10 @@ enum Action {
   newGame,
   hint,
   pause
+}
+
+enum Level {
+  easy
 }
 
 class UsePenChange extends ChangeNotifier{
@@ -39,7 +44,6 @@ class LogicalBoard {
     usePenChange = UsePenChange();
     pen = false;
     gm = GameCreator(squareModels, boxes, rows, cols);
-    gm.createGame();
   }
 
   late final List<SquareModel> squareModels;
@@ -53,17 +57,48 @@ class LogicalBoard {
 
   SquareModel? selectedSquare;
 
+  void setState(Map<String, dynamic> state){
+    pen = state['pen'] as bool;
+    for(Map<String,dynamic> squareState in state['squareStateModels'] as List<dynamic>){
+      SquareModel sq = squareModels.where((element) => element.squareIndex==squareState['squareIndex']).first;
+      sq.setSquareState(squareState);
+    }
+  }
+
+  void newGame(Level lvl){
+    for(SquareModel sq in squareModels){
+      sq.reset();
+    }
+    gm.createGame(lvl);
+    //Save the game state
+    writeState(getLogicalBoardState());
+  }
+
+  Map<String, Object> getLogicalBoardState() {
+    List<Map<String, Object>> squareStateModels = [];
+    for(SquareModel sq in squareModels){
+      squareStateModels.add(sq.getSquareState());
+    }
+    return {
+      'squareStateModels': squareStateModels,
+      'pen': pen
+    };
+  }
+
   void setNumber(int number){
     if(selectedSquare != null){
       selectedSquare?.number = number;
     }
-
+    //Save the game state
+    writeState(getLogicalBoardState());
   }
 
   void erase(){
     if(selectedSquare != null){
       selectedSquare?.erase();
     }
+    //Save the game state
+    writeState(getLogicalBoardState());
   }
 
   void setSelectedSquare(int squareIndex){
