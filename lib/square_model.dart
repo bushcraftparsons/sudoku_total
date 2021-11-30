@@ -268,8 +268,6 @@ class SquareModel extends ChangeNotifier {
       '_showEdit7': _showEdit7,
       '_showEdit8': _showEdit8,
       '_showEdit9': _showEdit9,
-      '_selected': _selected,
-      '_selectedCollection': _selectedCollection,
       '_shown': _shown,
       '_calculable': _calculable,
       '_possibleSolutions': _possibleSolutions.toList(),
@@ -293,8 +291,6 @@ class SquareModel extends ChangeNotifier {
     _showEdit7 = state['_showEdit7'] as bool;
     _showEdit8 = state['_showEdit8'] as bool;
     _showEdit9 = state['_showEdit9'] as bool;
-    _selected = state['_selected'] as bool;
-    _selectedCollection = state['_selectedCollection'] as bool;
     _shown = state['_shown'] as bool;
     _calculable = state['_calculable'] as bool;
     _possibleSolutions = ((state['_possibleSolutions'].cast<int>())).toSet();
